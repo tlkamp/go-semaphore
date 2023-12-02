@@ -12,6 +12,8 @@ Inspired by and possible due to https://github.com/eapache/channels.
 - Semaphore can be resized, up or down, at runtime
 
 ## Example
+
+### General Usage
 ```go
 package main
 
@@ -48,6 +50,57 @@ func main() {
 	wg.Wait()
 	fmt.Println("Complete")
 }
+```
+
+### Resize the Semaphore
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"sync"
+	"time"
+
+	"github.com/tlkamp/go-semaphore"
+)
+
+func longFn(i int) {
+	time.Sleep(200 * time.Millisecond)
+	fmt.Printf("Processed: %d\n", i)
+}
+
+func main() {
+	sem := semaphore.New(1)
+	wg := &sync.WaitGroup{}
+
+	// Set a timer and then increase the semaphore substantially
+	go func() {
+		time.Sleep(3 * time.Second)
+		sem.Resize(10)
+		fmt.Printf("===> Resized to %d\n", sem.Cap())
+	}()
+
+	for i := 0; i <= 100; i++ {
+		err := sem.Acquire(context.Background())
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		wg.Add(1)
+		go func(n int) {
+			defer sem.Release()
+			defer wg.Done()
+
+			longFn(n)
+		}(i)
+	}
+
+	wg.Wait()
+	fmt.Println("Complete")
+}
+
 ```
 
 ## Contribute

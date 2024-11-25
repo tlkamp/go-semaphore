@@ -12,5 +12,5 @@ require (
 
 require (
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )

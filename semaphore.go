@@ -3,6 +3,7 @@ package semaphore
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/eapache/channels"
 )
@@ -29,6 +30,21 @@ func (r *ResizableSemaphore) Acquire(ctx context.Context) error {
 	case <-ctx.Done():
 		return ctx.Err()
 	}
+}
+
+// TryAcquire will acquire a slot if any are available. A boolean indicating whether or not a slot was acquired is returned.
+func (r *ResizableSemaphore) TryAcquire() bool {
+	// Configure a small timeout in case the final semaphore is acquired after the check and before
+	// this function acquires a semaphore.
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+	defer cancel()
+	if r.Len() < r.Cap() {
+		if err := r.Acquire(ctx); err == nil {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Release frees up a slot.

@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/tlkamp/go-semaphore/compare/v1.0.0...v1.1.0) (2025-02-24)
+
+
+### Features
+
+* add tryacquire function ([ffc2564](https://github.com/tlkamp/go-semaphore/commit/ffc2564b94acacba4f439071a435c40937fa3fa7)), closes [#6](https://github.com/tlkamp/go-semaphore/issues/6)
+
 # 1.0.0 (2023-12-04)
 
 

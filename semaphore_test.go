@@ -109,3 +109,24 @@ func TestAcquire(t *testing.T) {
 		a.ErrorIs(err, context.Canceled)
 	})
 }
+
+func TestTryAcquire(t *testing.T) {
+	a := assert.New(t)
+
+	t.Run("Successful", func(t *testing.T) {
+		r := New(1)
+
+		a.True(r.TryAcquire())
+		defer r.Release()
+	})
+
+	t.Run("Failure", func(t *testing.T) {
+		r := New(1)
+
+		ctx := context.Background()
+		a.NoError(r.Acquire(ctx))
+
+		defer r.Release()
+		a.False(r.TryAcquire())
+	})
+}
